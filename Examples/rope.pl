@@ -7,7 +7,7 @@
 # sudo cpanm OpenGL OpenGL::GLFW
 
 
-use lib "lib";
+use lib "../lib";
 use strict;
 use warnings;
 use Time::HiRes qw(usleep);

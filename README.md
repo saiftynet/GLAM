@@ -20,3 +20,7 @@ in one Module, GLAM::OpenGL for using GLFW (OdenGL), and in the future SDL3.  Th
 submissions](https://old.reddit.com/r/perl/comments/1vixjm1/tsodings_rope_in_perl/) by [u/First_Ad8230](https://old.reddit.com/user/First_Ad8230) and [u/s_throwaway_r](https://old.reddit.com/user/s_throwaway_r)
 
 
+## Acknowledgements
+
+* [phanthanhduy](https://github.com/foolish4)
+* [Sanko Robinson](https://github.com/sanko)

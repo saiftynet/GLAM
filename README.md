@@ -14,4 +14,8 @@ Graphics Layer Abstraction Module
 Using interactive graphics typically requires a *Graphics Library*, which provides an API to connect
 both user input to the display output.  SDL3 and OpenGL are available to Perl, and have their own Modules
 on CPAN.  GLAM attempts to deliver a unified API with common functions e.g. drawing primitives and user input
-identical whichever GL is used.
+identical whichever GL is used.  I am not good at programming graphics nor do I code often, so a tool that eases
+graphics layer coding may be helpful.  GLAM bundles the IO, graphics primitives and a simple 2d Vector toolkit
+in one Module, GLAM::OpenGL for using GLFW (OdenGL), and in the future SDL3.
+
+

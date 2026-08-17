@@ -19,6 +19,11 @@ graphics layer coding may be helpful.  GLAM bundles the IO, graphics primitives 
 in one Module, GLAM::OpenGL for using GLFW (OdenGL), and in the future SDL3.  The code has been adapted from [Reddit
 submissions](https://old.reddit.com/r/perl/comments/1vixjm1/tsodings_rope_in_perl/) by [u/First_Ad8230](https://old.reddit.com/user/First_Ad8230) and [u/s_throwaway_r](https://old.reddit.com/user/s_throwaway_r)
 
+## How it works
+
+A GLAM game essentially sets up window,  which is a drawable canvas for graphical elements which, in turn, are merely muliple triangles. these elements are created in a GL agostic way.  The window updates every "tick". At every tick the keyboard and mouse status is collected and is accessible to the Game Logic in consistent way regardless if GL. The game logic has also access to a Vector Math toolkit which will simplify handling the positions of the elements.
+
+
 
 ## Acknowledgements
 

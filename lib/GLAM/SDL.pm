@@ -1,12 +1,17 @@
 package GLAM;
 use strict;use warnings;
-#!/usr/bin/env perl
+
 # GLAM    SDL variant
-# Needs gl and glfw
-# sudo apt install libopengl-perl
-# sudo apt install libglfw3
-# sudo apt install libglfw3-dev
-# sudo cpanm OpenGL OpenGL::GLFW
+# requires at least perl v5.40 # installed by using
+# cpanm SDL3
+# complex dependencies which may make installation tricky.  I have an older version of Ubuntu
+# 1) Dependencies identified in https://wiki.libsdl.org/SDL3/README-linux
+# 2) I needed to  manually install libssl
+# https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb
+# https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.24_amd64.deb
+# 3) libpipewire-0.2-1 libjack0 libjack-dev libpipewire-0.2-dev libpulse-dev libsndio7.0  libsndio-dev 
+
+
 
 use SDL3 qw[:all];
 

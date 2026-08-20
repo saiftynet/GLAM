@@ -59,7 +59,11 @@ Needs gl and glfw.
     sudo cpanm OpenGL OpenGL::GLFW
 ```
 
+### SDL3
 
+Needs Perl 5.40 minimum. I had to use Perlbrew, and even then I had difficulties. 
+
+1. Install as many of the pre-requisites as possible on the SDL3 wiki.
 ## Acknowledgements
 
 * [phanthanhduy](https://github.com/foolish4)

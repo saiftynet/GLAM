@@ -5,7 +5,19 @@ Graphics Layer Abstraction Module
 ```
     use GLAM::OpenGL;
     # use GLAM::SDL;
-    my $gl =new GLAM({height=>$WINDOW_HEIGHT,width=>$WINDOW_WIDTH,dt=>$DELTA_TIME_SEC});
+
+    my $gl =new GLAM({height=>400,width=>800,dt=>1/60});
+    my $gameObject =new GameObject($gl->{canvas},$GameParametersAsHashref);
+    $gl->mainLoop(\&update);
+
+    sub update{
+	   my ($app)=@_;
+	   if($app->key("esc") || $app->key("q")){# keys to exit GameLoop
+		  print("goodbye!\n");
+		  exit(0);
+	   }
+	   $gameObject->update($app->{dt},<List_of_IO_etc>);
+   }
 
 ```
 
@@ -22,6 +34,13 @@ submissions](https://old.reddit.com/r/perl/comments/1vixjm1/tsodings_rope_in_per
 ## How it works
 
 A GLAM game essentially sets up window,  which is a drawable canvas for graphical elements which, in turn, are merely muliple triangles. these elements are created in a GL agostic way.  The window updates every "tick". At every tick the keyboard and mouse status is collected and is accessible to the Game Logic in consistent way regardless if GL. The game logic has also access to a Vector Math toolkit which will simplify handling the positions of the elements.
+
+## The first program
+
+The rope demonstration that triggered this is the first program that uses GLAM.
+A single line can be changed to `use` either `OpenGL` or `SDL`.  
+
+
 
 
 

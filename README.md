@@ -61,9 +61,17 @@ Needs gl and glfw.
 
 ### SDL3
 
-Needs Perl 5.40 minimum. I had to use Perlbrew, and even then I had difficulties. 
+Needs Perl 5.40 minimum. I had to use Perlbrew (something I am not familiar with), and even then I had difficulties. 
 
-1. Install as many of the pre-requisites as possible on the SDL3 wiki.
+1. Install as many of the pre-requisites as possible on the [SDL3 wiki](https://wiki.libsdl.org/SDL3/README-linux).
+2. Manually install libraries going to the logs of every attempt as cpanm SDL3 failing.
+3. I needed to install `libssl` by installing debs found at [libssl1.1](https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb) and its associated  [`libssl-dev`](https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.24_amd64.deb)
+4. `sudo apt install libpipewire-0.2-1 libjack0 libjack-dev libpipewire-0.2-dev libpulse-dev libsndio7.0  libsndio-dev`
+5. `sudo apt install libxss1 and libxss-dev`
+6. After this `cpanm SDL3` worked fo2 me.
+
+
+
 ## Acknowledgements
 
 * [phanthanhduy](https://github.com/foolish4)

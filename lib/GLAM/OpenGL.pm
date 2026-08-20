@@ -1,6 +1,5 @@
 package GLAM;
 
-#!/usr/bin/env perl
 # GLAM    OpenGL variant
 # Needs gl and glfw
 # sudo apt install libopengl-perl

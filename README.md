@@ -1,4 +1,4 @@
-# GLAM
+7# GLAM
 Graphics Layer Abstraction Module
 
 ## SYNOPSIS
@@ -44,6 +44,20 @@ A single line can be changed to `use` either `OpenGL` or `SDL`.
 https://github.com/user-attachments/assets/f1043ac9-bb25-4ab3-8f4c-9170f3d78afe
 
 
+## Installation
+
+GLAM depends on the underlying Graphics layer and the corresponding Perl Modules to be installed. The installation of these has not been trivial for me. I would be pleased if someone could provide details of reliable methods for different systems. In mine (Ubuntu 20.04) this worked.
+
+### OpenGL
+
+Needs gl and glfw.
+
+```
+    sudo apt install libopengl-perl
+    sudo apt install libglfw3
+    sudo apt install libglfw3-dev
+    sudo cpanm OpenGL OpenGL::GLFW
+```
 
 
 ## Acknowledgements

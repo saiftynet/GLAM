@@ -1,79 +1,100 @@
 package GLAM;
-
+use strict;use warnings;
 #!/usr/bin/env perl
-# GLAM    OpenGL variant
+# GLAM    SDL variant
 # Needs gl and glfw
 # sudo apt install libopengl-perl
 # sudo apt install libglfw3
 # sudo apt install libglfw3-dev
 # sudo cpanm OpenGL OpenGL::GLFW
 
-use OpenGL;
-use OpenGL::GLFW qw(:all);
+use SDL3 qw[:all];
 
 
 our $VERSION='0.01';
 
+
 sub new{
 	my ($class,$params)=@_;
 	
-	glfwInit();
+	SDL_Init(SDL_INIT_VIDEO) || die 'Init Error: ' . SDL_GetError();
+	
 	my $self={
 		height=>$params->{height}//400,
 		width=>$params->{width}//800,
-		title=>$params->{title}//"GLAM-OpenGL",
+		title=>$params->{title}//"GLAM-SDL",
 		dt=>$params->{dt}//1.0/60,
-		
 		};
 	
-	$self->{window}=glfwCreateWindow($self->{width},$self->{height},$self->{title},NULL,NULL);
-	$self->{canvas}=new GLCanvas($self->{width},$self->{height});
-	$self->{keyboard}={};
-	$self->{mouse}={};
+	$self->{window}   = SDL_CreateWindow($self->{title}, $self->{width}, $self->{height}, 0 );
+	$self->{canvas}   = new SDLCanvas($self->{width},$self->{height});
+	$self->{renderer} = SDL_CreateRenderer( $self->{window}, undef );
+	$self->{last_time}= SDL_GetTicks();
+	$self->{event_ptr}= Affix::malloc(128);
+	$self->{keyboard}={scancode=>0};;
+	$self->{mouse}={x=>0, y=>0,mask=>0 };
+	$self->{running}=0;
 
-	glfwMakeContextCurrent($self->{window});
-	glClearColor(0.1,0.1,0.1,1.0);
-	glfwSwapInterval(1);
 	bless $self,$class;
 	return $self;
 	
 }
 
-
 sub mousePosition{
 	my $self=shift;
-		my ($x,$y)=glfwGetCursorPos($self->{window});
-		return Vector2->new($x,$self->{height}-$y);
+	return Vector2->new($self->{mouse}->{x},$self->{mouse}->{y});
 };
 
 sub button{   # return 1 if pressed, 0 if not 
 		my ($self,$btn)=@_;
-		return glfwGetMouseButton($self->{window},GLFW_MOUSE_BUTTON_LEFT)  if ($btn eq  "left");
-		return glfwGetMouseButton($self->{window},GLFW_MOUSE_BUTTON_RIGHT) if ($btn eq  "right");
+		return $self->{mouse}->{mask} & SDL_BUTTON_LMASK?1:0   if ($btn eq  "left");
+		return $self->{mouse}->{mask} & SDL_BUTTON_RMASK?1:0   if ($btn eq  "right");
 	};
 
 sub key{      # return 1 if pressed, 0 if not 
 		my ($self,$btn)=@_;
-		return glfwGetKey($self->{window},GLFW_KEY_ESCAPE)                if ($btn eq  "esc");
-		return glfwGetKey($self->{window},GLFW_KEY_Q)                     if ($btn eq  "q");
+		return unless $self->{keyboard}->{scancode};
+		return $self->{keyboard}->{scancode} == SDL_SCANCODE_ESCAPE?1:0     if ($btn eq  "esc");
+		return $self->{keyboard}->{scancode} == SDL_SCANCODE_Q?1:0          if ($btn eq  "q");
 }
 
 sub mainLoop{
 	my ($self,$subRef)=@_;
-	while(!glfwWindowShouldClose($self->{window})){
-		glClear(GL_COLOR_BUFFER_BIT);
-		
+	$self->{running}=1;
+	while($self->{running}){
+		my $now = SDL_GetTicks();
+		my $dt  = ( $now - $self->{last_time} ) / 1000.0;
+		$self->{last_time} = $now;
+		my $x=\$self->{mouse}->{x};
+		my $y=\$self->{mouse}->{y};
+	    $self->{mouse}->{mask} = SDL_GetMouseState($x, $y );
+	    
 
-		$subRef->($self);
+		while ( SDL_PollEvent($self->{event_ptr}) ) {
+			$self->{keyboard}->{scancode}=0;
+			my $h = Affix::cast( $self->{event_ptr}, SDL_CommonEvent );
+			if    ( $h->{type} == SDL_EVENT_QUIT ) { $self->{running} = 0 }
+			elsif ( $h->{type} == SDL_EVENT_KEY_DOWN ) {
+				my $k = Affix::cast( $self->{event_ptr}, SDL_KeyboardEvent );
+				$self->{keyboard}->{scancode}=$k->{scancode};
+			}
+		}
 
-		glfwSwapBuffers($self->{window});
-		glfwPollEvents();
+		SDL_SetRenderDrawColor( $self->{renderer}, 26, 26, 26, 255 );
+		SDL_RenderClear($self->{renderer});		
+		$self->{canvas}->{verts}=[];
+		$subRef->($self);	
+		SDL_RenderGeometry( $self->{renderer}, undef, $self->{canvas}->{verts}, scalar(@{$self->{canvas}->{verts}}), undef, 0 );
+		SDL_RenderPresent($self->{renderer});
 	}
-	
+	SDL_DestroyRenderer($self->{renderer});
+	SDL_DestroyWindow($self->{window});
+	SDL_Quit();
 }
 
-package GLCanvas;
-use OpenGL;
+package SDLCanvas;
+
+use SDL3 qw[:all];
 
 our $pi=3.14159;
 
@@ -83,10 +104,43 @@ sub new{
 		width=>$width,
 		height=>$height,
 		circleRes=>10,
+		currentColour=>{ r => 0.5, g => 0.5, b => 0.5 },
+		verts=>[],
 		objects=>[],
 	};
 	bless $self, $class;
 	return $self;
+}
+
+
+sub colour{
+	my ($self,$r,$g,$b,$a)=@_;
+	$self->{currentColour}={ r => $r, g => $g, b => $b};
+}
+
+sub winTriangle{
+	my ($self,$v2a,$v2b,$v2c)=@_;
+    push @{$self->{verts}}, map {
+		   { position => { x => $_->{x}, y => $self->{height} - $_->{y} },
+			 color => $self->{currentColour},
+			 tex_coord => { x => 0, y => 0 } } } $v2a,  $v2b, $v2c;
+
+}
+
+sub triangle{
+	my ($self,$v2a,$v2b,$v2c)=@_;
+
+	$self->winTriangle(
+		Vector2->new($v2a->toSimp($self)->asXY()),
+		Vector2->new($v2b->toSimp($self)->asXY()),
+		Vector2->new($v2c->toSimp($self)->asXY()),
+	    );
+}
+
+sub quad{
+	my ($self,$p0,$p1,$p2,$p3)=@_;
+	$self->triangle($p0,$p1,$p2);
+	$self->triangle($p0,$p2,$p3);
 }
 
 
@@ -105,41 +159,6 @@ sub thickLine{
 	    );
 }
 
-sub colour{
-	my ($self,$r,$g,$b,$a)=@_;
-	glColor3f($r,$g,$b);
-}
-
-sub winTriangle{
-	my ($self,$v2a,$v2b,$v2c)=@_;
-
-	glBegin(GL_TRIANGLES);
-	{
-		glVertex2f($v2a->toOpenGL($self)->asXY());
-		glVertex2f($v2b->toOpenGL($self)->asXY());
-		glVertex2f($v2c->toOpenGL($self)->asXY());
-	}
-	glEnd();
-}
-
-sub triangle{
-	my ($self,$v2a,$v2b,$v2c)=@_;
-
-	$self->winTriangle(
-		Vector2->new($v2a->toSimp($self)->asXY()),
-		Vector2->new($v2b->toSimp($self)->asXY()),
-		Vector2->new($v2c->toSimp($self)->asXY()),
-	    );
-}
-
-
-sub quad{
-	my ($self,$p0,$p1,$p2,$p3)=@_;
-	$self->triangle($p0,$p1,$p2);
-	$self->triangle($p0,$p2,$p3);
-}
-
-
 sub circle{
 	my ($self,$center,$radius,$triangles)=@_;
 	my $pi=3.14159;
@@ -152,8 +171,6 @@ sub circle{
 		$self->triangle($p0,$p1,$p2);
 	}
 }
-
-
 
 
 package Vector2;

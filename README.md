@@ -1,4 +1,4 @@
-7# GLAM
+# GLAM
 Graphics Layer Abstraction Module
 
 ## SYNOPSIS

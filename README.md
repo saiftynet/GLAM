@@ -37,7 +37,7 @@ A GLAM game essentially sets up window,  which is a drawable canvas for graphica
 
 ## The first program
 
-The rope demonstration that triggered this is the first program that uses GLAM.
+The [rope demonstration](https://github.com/saiftynet/GLAM/blob/main/Examples/rope-GLAM.pl) that triggered this is the first program that uses GLAM.
 A single line can be changed to `use` either `OpenGL` or `SDL`.  
 
 

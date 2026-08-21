@@ -68,9 +68,27 @@ Needs Perl 5.40 minimum. I had to use Perlbrew (something I am not familiar with
 3. I needed to install `libssl` by installing debs found at [libssl1.1](https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl1.1_1.1.1f-1ubuntu2.24_amd64.deb) and its associated  [`libssl-dev`](https://security.ubuntu.com/ubuntu/pool/main/o/openssl/libssl-dev_1.1.1f-1ubuntu2.24_amd64.deb)
 4. `sudo apt install libpipewire-0.2-1 libjack0 libjack-dev libpipewire-0.2-dev libpulse-dev libsndio7.0  libsndio-dev`
 5. `sudo apt install libxss1 and libxss-dev`
-6. After this `cpanm SDL3` worked fo2 me.
+6. After this `cpanm SDL3` worked for me.
 
 
+## How GLAM Works
+GLAM's operations are subject to change as it is new.
+1. When the GLAM object is created it generates a Canvas object which provides a window and graphics drawing primitives.
+2. This Canvas Object is passed to the Game Object, along with any initialisation parameters
+3. The Game object is initialised.  It stores the Game state, provides the game logic, has an update function that responds to any keys pressed, mouse state, and the time elapsed etc. at each Game loop.
+4. When the GLAM's Game loop is started,
+   a. does some house keeping,
+   b. the loop checks for any end conditions
+   c. submits the mouse,keyboard data to the Game Object's logic
+   d. the Game object updates its statee, prepares the screen update before returning to the game loop
+   e. loop the refreshes the screen buffer etc and continues
+   f. if exit condition met GLAM tidies up and exits
+
+## TO DO
+
+The objective is to add features as needed to create any new game.
+2D games/tools are created first, and may in the future add more complex functionality.
+But all times the objective will remain to produce near identical results whicher graphics back end is used.
 
 ## Acknowledgements
 

@@ -1,4 +1,3 @@
-[rope-GLAM.webm](https://github.com/user-attachments/assets/e0b0c3bc-9d9e-424b-a847-daa63bc2de8c)
 # GLAM
 Graphics Layer Abstraction Module
 

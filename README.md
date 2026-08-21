@@ -41,7 +41,7 @@ The [rope demonstration](https://github.com/saiftynet/GLAM/blob/main/Examples/ro
 A single line can be changed to `use` either `OpenGL` or `SDL`.  
 
 
-https://github.com/user-attachments/assets/f1043ac9-bb25-4ab3-8f4c-9170f3d78afe
+![rope-GLAM.PL](https://github.com/user-attachments/assets/f1043ac9-bb25-4ab3-8f4c-9170f3d78afe)
 
 
 ## Installation

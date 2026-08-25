@@ -94,6 +94,17 @@ The objective is to add features as needed to create any new game.
 2D games/tools are created first, and may in the future add more complex functionality.
 But all times the objective will remain to produce near identical results whicher graphics back end is used.
 
+## CHANGES
+v 0.02 Ball physics
+* some additional Vector2 Methods
+* (consider future overloading for Vector arithmetic)
+* Added Ball.pm for initial ball physics in 2D
+* Created Bounce-GLAM.pl to demo ball physics
+
+v 0.01  Initial Commit
+* GLAM::SDL and GAM::OpenGL
+* allows a Rope-GLAM.pl to work in both in OpenGL and SDL3
+* 
 ## Acknowledgements
 
 * [phanthanhduy](https://github.com/foolish4)

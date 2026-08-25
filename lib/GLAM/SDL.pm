@@ -16,7 +16,7 @@ use strict;use warnings;
 use SDL3 qw[:all];
 
 
-our $VERSION='0.01';
+our $VERSION='0.02';
 
 
 sub new{
@@ -179,6 +179,7 @@ sub circle{
 
 
 package Vector2;
+
 sub new{
 	my ($class,$x,$y)=@_;
 	my $self={
@@ -203,11 +204,18 @@ sub set{
 	return $self;
 }
 
-sub unitNormal{
+sub unitNormal{ # to a vector
 	my ($self)=@_;
 	return unless $self->length()>0.000001;
 	return new Vector2(-$self->{y}/$self->length(),$self->{x}/$self->length());
 	
+}
+
+sub unitVector{
+	my ($self)=@_;
+	my $distance=$self->length();
+	$distance = 0.0001 if $distance == 0;
+	return $self->div($distance);
 }
 
 sub diff{
@@ -215,31 +223,41 @@ sub diff{
 	return new Vector2($self->{x}-$vec2->{x},$self->{y}-$vec2->{y});	
 }
 
-sub delta{
+sub delta{ # given angle and distance from a point;
 	my ($self,$distance,$angle)=@_;
 	return new Vector2(cos($angle),sin($angle))->mul($distance)->add($self);
 }
 
-sub add{
+sub add{ # add
 	my ($self,$vec2)=@_;
 	return new Vector2($vec2->{x}+$self->{x},$vec2->{y}+$self->{y});	
 }
 
-sub mul{
+
+sub mul{ # mutiplies
 	my ($self,$m)=@_;
 	return new Vector2($self->{x}*$m,$self->{y}*$m);	
 }
 
-sub div{
+
+sub div{ # divides 
 	my ($self,$d)=@_;
 	return new Vector2($self->{x}/$d,$self->{y}/$d);	
 }
 
-sub length{
-	my ($self)=@_;
-	return sqrt(($self->{x}**2)+($self->{y}**2));
+
+sub dot{ #dot product
+	my ($self,$d)=@_;
+	return $self->{x}*$d->{x}+$self->{y}*$d->{y};		
 }
 
+sub length{ # vector magnitude
+	my ($self)=@_;
+	return sqrt((($self->{x})**2)+(($self->{y})**2));
+}
+
+
+# conversion routines
 sub toOpenGL{
 	my ($self,$window)=@_;
 	return new Vector2(

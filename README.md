@@ -72,16 +72,21 @@ Needs Perl 5.40 minimum. I had to use Perlbrew (something I am not familiar with
 
 ## How GLAM Works
 GLAM's operations are subject to change as it is new.
-1. When the GLAM object is created it generates a Canvas object which provides a window and graphics drawing primitives.
-2. This Canvas Object is passed to the Game Object, along with any initialisation parameters
-3. The Game object is initialised.  It stores the Game state, provides the game logic, has an update function that responds to any keys pressed, mouse state, and the time elapsed etc. at each Game loop.
-4. When the GLAM's Game loop is started,
-   a. does some house keeping,
-   b. the loop checks for any end conditions
-   c. submits the mouse,keyboard data to the Game Object's logic
-   d. the Game object updates its statee, prepares the screen update before returning to the game loop
-   e. loop the refreshes the screen buffer etc and continues
-   f. if exit condition met GLAM tidies up and exits
+<ol type="1">
+<li> When the GLAM object is created it generates a Canvas object which provides a window and graphics drawing primitives.</li>
+<li> This Canvas Object is passed to the Game Object, along with any initialisation parameters</li>
+<li> The Game object is initialised.  It stores the Game state, provides the game logic, has an update function that responds to any keys pressed, mouse state, and the time elapsed etc. at each Game loop.</li>
+<li> When the GLAM's Game loop is started,
+
+<ol type="a">
+  <li>does some house keeping</li>
+  <li>the loop checks for any end conditions</li>
+  <li>submits the mouse,keyboard data to the Game Object's logic</li>
+  <li>the Game object updates its statee, prepares the screen update before returning to the game loop</li>
+  <li>loop the refreshes the screen buffer etc and continues</li>
+  <li>if exit condition met GLAM tidies up and exits</li>
+</ol></li>
+</ol>
 
 ## TO DO
 

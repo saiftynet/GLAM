@@ -114,3 +114,5 @@ v 0.01  Initial Commit
 
 * [phanthanhduy](https://github.com/foolish4)
 * [Sanko Robinson](https://github.com/sanko)
+* [Ed J](https://metacpan.org/dist/OpenGL-GLFW)
+* [Chris Marshall](https://github.com/devel-chm)

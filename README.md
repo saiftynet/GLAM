@@ -28,7 +28,7 @@ both user input to the display output.  SDL3 and OpenGL are available to Perl, a
 on CPAN.  GLAM attempts to deliver a unified API with common functions e.g. drawing primitives and user input
 identical whichever GL is used.  I am not good at programming graphics nor do I code often, so a tool that eases
 graphics layer coding may be helpful.  GLAM bundles the IO, graphics primitives and a simple 2d Vector toolkit
-in one Module, GLAM::OpenGL for using GLFW (OdenGL), and in the future SDL3.  The code has been adapted from [Reddit
+in one Module, GLAM::OpenGL for using GLFW (OpenGL), and GLAM::SDL for SDL3.  The code has been adapted from [Reddit
 submissions](https://old.reddit.com/r/perl/comments/1vixjm1/tsodings_rope_in_perl/) by [u/First_Ad8230](https://old.reddit.com/user/First_Ad8230) and [u/s_throwaway_r](https://old.reddit.com/user/s_throwaway_r)
 
 ## How it works

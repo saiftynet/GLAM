@@ -95,6 +95,13 @@ The objective is to add features as needed to create any new game.
 But all times the objective will remain to produce near identical results whicher graphics back end is used.
 
 ## CHANGES
+v0.03
+* allow multiple ways of getting a Vector2 at inception
+* correct for differences in coordinate geometry between OpenGL and SDL
+* create an interactive Carrom like game
+* Ball.pm has additional components for surface friction
+* Acknowledge developers of perl OpenGL and perl SDL.
+
 v 0.02 Ball physics
 * some additional Vector2 Methods
 * (consider future overloading for Vector arithmetic)

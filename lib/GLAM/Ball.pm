@@ -7,11 +7,12 @@ sub new{
 	my %p = (ref $params[0])?%{$params[0]}:@params;
 	my $self={rad=>$p{rad},
 		      col=>$p{col},
-		      pos=>$p{pos},
+		      pos=>new Vector2($p{pos}),
 		      vel=>$p{vel}//new Vector2(),
 		      mass=>$p{mass}//$p{rad}*$p{rad},
 		      sf     => $p{static_friction}  || 0.4, # Resistance to starting motion
 		      df     => $p{dynamic_friction} || 0.2, # Resistance during sliding
+          minSpeed=>$p{minSpeed}//10,
 		      }
 	;
 		      
@@ -52,7 +53,6 @@ sub bounce{
          my $j = -(1 + $restitution) * $velInNormal;
          $j /= (1 / $self->{mass} + 1 / $other->{mass});
 
-         # --- STEP C: Friction Impulse ---
          # Tangent vector (perpendicular to normal)
          my $tangent=$un->unitNormal();
          my $velInTangent = $relVel->dot($tangent);
@@ -115,9 +115,14 @@ sub separation{
 }
 
 sub update{
-	my ($self,$dt)=@_;
+	my ($self,$dt,$drag)=@_;
+  if ($self->{vel}->length()<$self->{minSpeed}){
+      $self->{vel}=new Vector2();
+      return 0 
+    };
+  if ($drag) {$self->{vel}=$self->{vel}->mul(1-$drag)};
 	$self->{pos}=$self->{pos}->add($self->{vel}->mul($dt));
-	# print $self->{pos}->{x},":",$self->{pos}->{y},"\n";
+  return 1;
 	
 }
 

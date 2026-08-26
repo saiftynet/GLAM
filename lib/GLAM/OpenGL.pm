@@ -12,7 +12,7 @@ use OpenGL;
 use OpenGL::GLFW qw(:all);
 
 
-our $VERSION='0.02';
+our $VERSION='0.03';
 
 sub new{
 	my ($class,$params)=@_;
@@ -159,11 +159,9 @@ package Vector2;
 
 sub new{
 	my ($class,$x,$y)=@_;
-	my $self={
-		x=>$x//0,
-		y=>$y//0
-	};
-	bless($self,$class);
+	my $self={};
+  bless($self,$class);
+  $self->set($x,$y);
 	return $self;
 }
 

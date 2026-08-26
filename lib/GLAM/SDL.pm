@@ -1,5 +1,6 @@
 package GLAM;
-use strict;use warnings;
+use strict;
+use warnings;
 
 # GLAM    SDL variant
 # requires at least perl v5.40 # installed by using
@@ -16,7 +17,7 @@ use strict;use warnings;
 use SDL3 qw[:all];
 
 
-our $VERSION='0.02';
+our $VERSION='0.03';
 
 
 sub new{
@@ -47,7 +48,7 @@ sub new{
 
 sub mousePosition{
 	my $self=shift;
-	return Vector2->new($self->{mouse}->{x},$self->{mouse}->{y});
+	return Vector2->new($self->{mouse}->{x},$self->{height}-$self->{mouse}->{y});
 };
 
 sub button{   # return 1 if pressed, 0 if not 
@@ -126,7 +127,7 @@ sub colour{
 sub winTriangle{
 	my ($self,$v2a,$v2b,$v2c)=@_;
     push @{$self->{verts}}, map {
-		   { position => { x => $_->{x}, y => $self->{height} - $_->{y} },
+		   { position => { x => $_->{x}, y =>  $_->{y} },
 			 color => $self->{currentColour},
 			 tex_coord => { x => 0, y => 0 } } } $v2a,  $v2b, $v2c;
 
@@ -177,22 +178,22 @@ sub circle{
 	}
 }
 
-
 package Vector2;
 
 sub new{
 	my ($class,$x,$y)=@_;
-	my $self={
-		x=>$x//0,
-		y=>$y//0
-	};
-	bless($self,$class);
+	my $self={};
+  bless($self,$class);
+  $self->set($x,$y);
 	return $self;
 }
 
 sub set{
 	my ($self,$x,$y)=@_;
-	if (ref $x eq "ARRAY"){
+  if (! defined $x){
+    ($self->{x},$self->{y})=(0,0);
+  }
+	elsif (ref $x eq "ARRAY"){
 		($self->{x},$self->{y})=@$x;
 	}
 	elsif((ref $x eq "HASH")||(ref $x eq "Vector2")){
@@ -220,6 +221,7 @@ sub unitVector{
 
 sub diff{
 	my ($self,$vec2)=@_;
+  die "undefined vec2 in caller" . caller() if (!defined $vec2);
 	return new Vector2($self->{x}-$vec2->{x},$self->{y}-$vec2->{y});	
 }
 
@@ -278,3 +280,4 @@ sub asXY{
 }
 
 1;
+

@@ -5,6 +5,10 @@ use Time::HiRes qw(usleep);
 use GLAM::OpenGL;   # Change this line to use GLAM::SDL to use SDL3
 use GLAM::Ball;
 
+
+
+
+
 #configuration
 my $WINDOW_WIDTH=600;
 my $WINDOW_HEIGHT=600;
@@ -12,7 +16,7 @@ my $FPS=60.0;
 my $DELTA_TIME_SEC=1.0/$FPS;
 
 my $gl =new GLAM({height=>$WINDOW_HEIGHT,width=>$WINDOW_WIDTH,dt=>$DELTA_TIME_SEC});
-my $carrom =new Carrom($gl->{canvas},{drag=>.03});
+my $carrom =new Carrom($gl->{canvas},{friction=>.03});
 $gl->mainLoop(\&update);
 
 sub update{
@@ -191,7 +195,7 @@ sub inPocket{
   }
   foreach (@{$self->{pockets}}){
       if ($self->{striker}->{pos}->diff($_)->length()<$self->{pocketRadius}){
-           print "Striker Pockected!\n" ;
+           print "Striker Pocketed!\n" ;
            $self->strikerReset(20);
        };
     }

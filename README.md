@@ -35,7 +35,7 @@ submissions](https://old.reddit.com/r/perl/comments/1vixjm1/tsodings_rope_in_per
 
 A GLAM game essentially sets up window,  which is a drawable canvas for graphical elements which, in turn, are merely muliple triangles. these elements are created in a GL agostic way.  The window updates every "tick". At every tick the keyboard and mouse status is collected and is accessible to the Game Logic in consistent way regardless if GL. The game logic has also access to a Vector Math toolkit which will simplify handling the positions of the elements.
 
-A basic [How-to]("How to use.md"] is provided, along with an example [skeleton](https://github.com/saiftynet/GLAM/blob/main/Examples/skeleton-GLAM.pl) to help get started
+A basic [Ho-To](https://github.com/saiftynet/GLAM/blob/main/How%20To%20Use.md) is provided, along with an example [skeleton](https://github.com/saiftynet/GLAM/blob/main/Examples/skeleton-GLAM.pl) to help get started
 
 ## The first program
 

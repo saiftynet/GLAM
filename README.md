@@ -1,5 +1,6 @@
 # GLAM
 Graphics Layer Abstraction Module
+<img width="881" height="427" alt="image" src="https://github.com/user-attachments/assets/31ba525d-233b-47a2-8268-70415262d17e" />
 
 ## SYNOPSIS
 ```

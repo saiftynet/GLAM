@@ -74,7 +74,7 @@ Needs Perl 5.40 minimum. I had to use Perlbrew (something I am not familiar with
 6. After this `cpanm SDL3` worked for me.
 
 
-## How GLAM Works
+## The Program Flow
 GLAM's operations are subject to change as it is new.
 <ol type="1">
 <li> When the GLAM object is created it generates a Canvas object which provides a window and graphics drawing primitives.</li>

@@ -92,6 +92,10 @@ GLAM's operations are subject to change as it is new.
 </ol></li>
 </ol>
 
+<img width="1129" height="663" alt="GLAM" src="https://github.com/user-attachments/assets/d8df1204-0170-468a-beb5-b650bb63c487" />
+
+
+
 ## TO DO
 
 The objective is to add features as needed to create any new game.

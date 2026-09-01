@@ -94,7 +94,19 @@ GLAM's operations are subject to change as it is new.
 
 <img width="1129" height="663" alt="GLAM" src="https://github.com/user-attachments/assets/d8df1204-0170-468a-beb5-b650bb63c487" />
 
+## OBJECTS
 
+### GLAM::OpenGL and GLAM::SDL (maybe GLAM::Any)
+### new
+
+
+### SDLCanvas and GLCanvas
+
+### Vector2
+
+### Ball
+
+### Logo
 
 ## TO DO
 

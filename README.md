@@ -94,27 +94,44 @@ GLAM's operations are subject to change as it is new.
 
 <img width="1129" height="663" alt="GLAM" src="https://github.com/user-attachments/assets/d8df1204-0170-468a-beb5-b650bb63c487" />
 
-## OBJECTS
+## OBJECTS and Methods
 
 ### GLAM::OpenGL and GLAM::SDL (maybe GLAM::Any)
-### new
-
+#### `new`
+#### `key`
+#### `mousePosition`
+#### `button`
+#### `mainloop`
 
 ### SDLCanvas and GLCanvas
+#### `triangle`
+#### `thickLine`
+#### `circle`
 
 ### Vector2
+#### `add`
+#### `diff`
+#### `mul`
+#### `div`
+#### `dot`
+#### `length`
+#### `unitNormal`
 
 ### Ball
 
-### Logo
 
 ## TO DO
 
-The objective is to add features as needed to create any new game.
-2D games/tools are created first, and may in the future add more complex functionality.
-But all times the objective will remain to produce near identical results whicher graphics back end is used.
+Text
+Line Drawings
+AOV
 
 ## CHANGES
+
+v0.04
+* added named colours
+* updated Carrom-GLAM.pl to be nearly complete game
+
 v0.03
 * allow multiple ways of getting a Vector2 at inception
 * correct for differences in coordinate geometry between OpenGL and SDL

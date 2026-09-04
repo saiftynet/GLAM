@@ -1,6 +1,6 @@
 package  Ball;
 
-our $VERSION='0.03';
+our $VERSION='0.04';
 
 sub new{
 	my ($class,@params)=@_;
@@ -12,7 +12,7 @@ sub new{
 		      mass=>$p{mass}//$p{rad}*$p{rad},
 		      sf     => $p{static_friction}  || 0.4, # Resistance to starting motion
 		      df     => $p{dynamic_friction} || 0.2, # Resistance during sliding
-          minSpeed=>$p{minSpeed}//10,
+          minSpeed=>$p{minSpeed}//20,
 		      }
 	;
 		      
@@ -40,6 +40,21 @@ sub bounce{
 	# this is sort of different from a normal to a vector...the vector bewteen 
 	# the centers of two circles is normal to the tangent of the circles
 	my $un=$other->{pos}->diff($self->{pos})->unitVector();
+
+
+  # correct overlaps 
+  my $overlap=- $self->separation($other);
+  my $percent = 0.8; 
+  my $correction_mag = ($overlap / (1/$self->{mass} + 1/$other->{mass})) * $percent;
+                
+  $self->{pos}=$self->{pos}->diff($un->mul($correction_mag/$self->{mass}));
+                #$c1->{x} -= $nx * $correction_mag / $c1->{mass};
+                #$c1->{y} -= $ny * $correction_mag / $c1->{mass};
+  $other->{pos}=$other->{pos}->add($un->mul($correction_mag/$other->{mass}));
+                #$c2->{x} += $nx * $correction_mag / $c2->{mass};
+                #$c2->{y} += $ny * $correction_mag / $c2->{mass};
+
+
 
 	#relative velocity in direction of normal
 	my $relVel=$other->{vel}->diff($self->{vel});

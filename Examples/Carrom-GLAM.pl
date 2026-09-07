@@ -2,7 +2,7 @@ use lib "../lib";
 use strict;
 use warnings;
 use Time::HiRes qw(usleep);
-use GLAM::SDL;   # Change this line to use GLAM::SDL to use SDL3
+use GLAM::OpenGL;   # Change this line to use GLAM::SDL to use SDL3
 use GLAM::Ball;     # The 2d Ball (so really a disk) physics engine
 
 #configuration
@@ -50,6 +50,7 @@ sub new{
                           2=>{counters=>[],target=>""},
                           3=>{counters=>[],target=>""},
                           4=>{counters=>[],target=>""}};
+  $self->{winner}=0;
   $self->{shot}=0;
   bless $self,$class;
   
@@ -96,6 +97,7 @@ sub board{
                         new Vector2($r-65,$b+90), new Vector2($r-65,$t-90),
                         new Vector2($l+90,$t-65), new Vector2($r-90,$t-65)];
 }
+
 
 sub drawBoard{
   my $self=shift;
@@ -190,6 +192,14 @@ sub validStrikerPlacement{
 # if the "queen" is pocketed, the next shot must pocket a counter for the player
 # or the queen is returned  
 sub putBackCounter{
+	my ($self,$colour)=@_;
+  my ($cx,$cy)=($self->{boardPos}->[0]+$self->{boardWidth}/2,$self->{boardPos}->[1]+$self->{boardWidth}/2);
+  my $theme={
+      "white"=>[255/256,215/256,0],
+      "black"=>[50/256,50/256,50/256],
+      "red"=>[256/256,100/256,50/256],
+  };
+  push @{$self->{counters}}, new Ball({ pos=>[$cx,$cy],col=>$theme->{$colour}, rad=>15});
   
 }
 
@@ -260,76 +270,104 @@ sub inPocket{
            print "Striker Pocketed!\n" ;
            $self->strikerReset(20);
            $self->{pocketed}->{striker}=1; 
+           last;
        };
     }  
 }
 
 sub nothingPocketed{
 	my $self=shift;
-  return ($self->{pocketed}->{black}+$self->{pocketed}->{white}+$self->{pocketed}->{red}) ==0;
+  return ($self->{pocketed}->{black}+$self->{pocketed}->{white}+$self->{pocketed}->{red}+$self->{pocketed}->{striker}) ==0;
 }
 
 sub targetPocketed{
 	my $self=shift;
-  return 0 if $self->nothingPocketed();
+  my $cp=$self->{currentPlayer};
+  my $cpState=$self->{playerCounter}->{$cp};
+  my $target=$cpState->{target};
   my $success=0;
-  my $target=$self->{playerCounter}->{$self->{currentPlayer}}->{target};
-  
-
-  
-  if ($target eq ""){# no colours allocated, so any colour is acceptable
-     # if both white and black are pocketed, we can not yet allocate colours
-     if ($self->{pocketed}->{white}  && $self->{pocketed}->{black}){
-       for (qw/white black/){
+  for (qw/white black red/){
          $self->{unallocated}->{$_}+=$self->{pocketed}->{$_};
-       }
-     }
-     else{
-       $self->{playerCounter}->{$self->{currentPlayer}}->{target}=$self->{pocketed}->{white}?"white":"black";
-       $self->{playerCounter}->{$self->otherPlayer()  }->{target}=$self->{pocketed}->{white}?"black":"white";
-       print  "Player $self->{currentPlayer} now playing for  $self->{playerCounter}->{$self->{currentPlayer}}->{target}\n";
-       print  "Player ".$self->otherPlayer()." now playing for  ". $self->{playerCounter}->{$self->otherPlayer()}->{target}."\n";
-       
-     }
-     $success=1;
-  }
-  else {  #  already allocated colours
-     $success = 1 if ($self->{pocketed}->{$target}  || $self->{pocketed}->{red});
-     foreach (1..2){
-       my $ctr=$self->{playerCounter}->{$_}->{target};
-       die $ctr unless $ctr;
-       push @{$self->{playerCounter}->{$_}->{counters}},($ctr) x $self->{pocketed}->{$ctr};
-       push @{$self->{playerCounter}->{$_}->{counters}},($ctr) x $self->{unallocated}->{$ctr};
-     }
-  }
-
-  $success =0 if ($self->{pocketed}->{striker});
-  if ($self->{pocketed}->{red}){
-    if ($self->{pocketed}->{striker}){
-      print "red pocketed with striker; foul; red returned to center\n";
-      $self->{redPocketedLast}=0;
+  };
+  
+  ### Striker pocketed foul
+  if ($self->{pocketed}->{striker}){
+    if ($self->{unallocated}->{red}){
+      $self->{unallocated}->{red}=0;
+      $self->putBackCounter("red");
+    };
+    # return a counter if striker pocketed and the player has a target counter
+    if ($target ne ""){
+         if ($self->{unallocated}->{$target}){
+           $self->{unallocated}->{$target}--;
+           $self->putBackCounter($target);
+         }
+         elsif (@{$cpState->{counters}}){
+           my $col= shift @{$cpState->{counters}};
+           $self->putBackCounter($col);
+         }
+      }
+      # regardless of target; if last counter pocketed by player was red, it is returned
+      # also returned if it is the only colour left;
+      if (@{$cpState->{counters}} && $cpState->{counters}->[-1] eq "red"){
+           my $col= pop @{$cpState->{counters}};
+           $self->putBackCounter($col);
+      }
     }
     
-    else{
-      print "red pocketed;$self->{currentPlayer} needs to cover it with next shot;\n";
-      $self->{redPocketedLast}=1;
+    
+    elsif ($target eq ""){# no colours allocated, so any colour is acceptable
+     # if both white and black are pocketed, we can not yet allocate colours
+      if ($self->{pocketed}->{white}  && $self->{pocketed}->{black}){
+        $success=1;
+      }
+    # if either white or black os pocketed we can start allocating counters
+      elsif($self->{pocketed}->{white} || $self->{pocketed}->{black}){
+        $cpState->{target}=$self->{pocketed}->{white}?"white":"black";
+        $self->{playerCounter}->{$self->otherPlayer()  }->{target}=$self->{pocketed}->{white}?"black":"white";
+        print  "Player $self->{currentPlayer} now playing for  $cpState->{target}\n";
+        print  "Player ".$self->otherPlayer()." now playing for  ". $self->{playerCounter}->{$self->otherPlayer()}->{target}."\n";
+        $success=1;
+      }
+      elsif ($self->{pocketed}->{red}){
+        $success=1;
+      }
     }
-  }
-  elsif ($success  && $self->{redPocketedLast}){
-    push @{$self->{playerCounter}->{$self->{currentPlayer}}->{counters}},"red" ;
-    print "$self->{currentPlayer} has covered the red; keeps it\n";
-    $self->{redPocketedLast}=0;
-  }
-  elsif($self->{redPocketedLast}){
-    print "red not covered; returned to Center\n";
-    $self->{redPocketedLast}=0;
-  }
-
-
-
+    # target already defined, so pocket either target colour or red is success
+    elsif ($self->{pocketed}->{$target}  || $self->{pocketed}->{red}) {
+        $success = 1 ;
+    }
+    # otherwise failed, so any uncovered red must be returned
+    else{
+      if ($self->{unallocated}->{red}){
+       $self->{unallocated}->{red}=0;
+       $self->putBackCounter("red");
+      }
+      elsif (@{$cpState->{counters}} && $cpState->{counters}->[-1] eq "red"){
+           my $col= pop @{$cpState->{counters}};
+           $self->putBackCounter($col);
+      }
+    }
+    
+    
+    # target is defined now can allocate the counters
+    if ($target ne ""){
+      foreach (1..2){
+        my $ctr=$self->{playerCounter}->{$_}->{target};
+        die $ctr unless $ctr;
+        push @{$self->{playerCounter}->{$_}->{counters}},($ctr) x $self->{unallocated}->{$ctr};
+       }
+       $self->{unallocated}=  {white=>0,red=>0,black=>0,striker=>0};
+     }
+     else{
+       $self->{unallocated}->{red}=0;
+     }
+     push @{$cpState->{counters}}, "red" if $self->{pocketed}->{red};
+  
+ 
   
   # reset the pocketed count
-  $self->{pocketed}=     {white=>0,red=>0,black=>0};
+  $self->{pocketed}=     {white=>0,red=>0,black=>0,striker=>0};
 
   # red counters that are pocket are put on "standby".
   # Another target colour has to be pocketed in the next shot to keep the red
@@ -338,17 +376,6 @@ sub targetPocketed{
   
   return $success;
   
-}
-
-sub toCenter{
-	my ($self,$colour)=@_;
-  my $theme={
-      "white"=>[255/256,215/256,0],
-      "black"=>[50/256,50/256,50/256],
-      "red"=>[256/256,100/256,50/256],
-  };
-  my ($cx,$cy)=($self->{boardPos}->[0]+$self->{boardWidth}/2,$self->{boardPos}->[1]+$self->{boardWidth}/2);
-  new Ball({ pos=>  [$cx      , $cy      ]   ,col=>$theme->{colour}, rad=>$self->{counterRadius}}),
 }
 
 sub otherPlayer{
@@ -376,17 +403,44 @@ sub update{
   $self->{ballsInPlay}+=$_->update($dt,$self->{friction}) foreach ($self->{striker},@{$self->{counters}});
     
   if ($self->{ballsInPlay}==0){  # $striker can be dragged when all motion stopped
-      if ($self->{shot}){
+      if ($self->{shot}){      # striker shot
         my $success=$self->targetPocketed() &! $self->{pocketed}->{striker};
         if ($self->{pocketed}->{striker}){
           print "Foul committed\n";
           $self->{pocketed}->{striker}=0;
         };
-        $self->{shot}=0;
+        $self->{shot}=0;        # ready to shoot again 
         $self->{currentPlayer}=$self->otherPlayer() unless $success;
-        print "Player $self->{currentPlayer}'s turn\n";
+        foreach my $pl(1..2){
+          my $count=0;my $red=0;
+          print "Player $pl has ";
+          foreach (@{ $self->{playerCounter}->{$pl}->{counters}}){
+            if ($_ eq "red") {$red=1;} else {$count++}
+          }
+          print "$count ".$self->{playerCounter}->{$pl}->{target}. " counters ";
+          print $red ? "and the Queen\n":"\n";
+          $self->{winner}= $pl if ($count >8);
+        }
+        if ($self->{winner}){
+          print "*** Player $self->{winner} has won ***\n Another Game?\n"; 
+          
+        }
+        else{
+          print "Player $self->{currentPlayer}'s turn\n";
+        }
       }
-    	if ($leftButton           &&
+      if ($self->{winner}){
+        if ($leftButton){
+          $self->board();
+          $self->counterReset(15);
+          $self->strikerReset(20);
+          $self->{winner}=0
+        }
+        else{
+          exit(0);
+        }
+      }
+    	elsif ($leftButton           &&
 	       !$self->{prevLeftBtn}  &&
 	       ($mousePos->diff($self->{striker}->{pos})->length()<$self->{striker}->{rad})
 	        ){ $self->{drag}=1;}   

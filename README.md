@@ -139,7 +139,8 @@ v0.03
 * Ball.pm has additional components for surface friction
 * Acknowledge developers of perl OpenGL and perl SDL.
 
-[Carrom-GLAM.webm](https://github.com/user-attachments/assets/ddc50613-1d68-4a95-9047-0a2ee01236b3)
+
+https://github.com/user-attachments/assets/bd2d5db4-7608-48e8-b3b6-8ac3ca7940f3
 
 
 v 0.02 Ball physics

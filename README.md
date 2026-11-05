@@ -98,8 +98,31 @@ GLAM's operations are subject to change as it is new.
 
 ### GLAM::OpenGL and GLAM::SDL (maybe GLAM::Any)
 #### `new`
+`
+my $gl =new GLAM({height=>$WINDOW_HEIGHT,width=>$WINDOW_WIDTH,dt=>$DELTA_TIME_SEC});
+`
+Creates a window for the application and returns a GLAM Object which has
+as a property a canvas object (e.g. `$gl->{canvas}` in above example ).
+This canvas object can be provided for any object that needs to draw on
+the canvas (the game object, UI elements etc).  At each gameloop, the applications
+checks mouseposition, the state of the left mouse botton and the "escape" and "q"
+keys on the keyboard.  Clearly all the keys could be checked, but for this early version#
+the these two keys are used to exit the application.
+
 #### `key`
+`
+$app->key("q")
+`
+Checks the state of the "q" key
+
+
 #### `mousePosition`
+`
+$app->mousePosition()
+`
+Returns the mouseposition as a Vector2 object
+
+
 #### `button`
 #### `mainloop`
 

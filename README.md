@@ -109,22 +109,39 @@ checks mouseposition, the state of the left mouse botton and the "escape" and "q
 keys on the keyboard.  Clearly all the keys could be checked, but for this early version#
 the these two keys are used to exit the application.
 
+### Inputs
+The application may respond to inputs.  These are polled at the beginning of the gameloop
+and passed to the game Object for example thus:
+`
+	$carrom->update($app->{dt},$app->mousePosition(),$app->button("left"));
+`
+
 #### `key`
 `
-$app->key("q")
+my $qPressed=$app->key("q")
 `
-Checks the state of the "q" key
+Checks the state of the "q" key.  It would certainly be possible to check other keys...but for
+this active iteration, while we work out the best way of handling key presses, just the "q" v
+ab=nd "esxc" keys are checked at each gameLoop, the examples shown simply use these to abort the
+application.
 
 
 #### `mousePosition`
 `
 $app->mousePosition()
 `
-Returns the mouseposition as a Vector2 object
-
+Returns the mouseposition as a Vector2 object.
 
 #### `button`
+`
+$app->button("left")
+`
+
+Returns the state of the Left mouse button...true if pressed, false otherwise.
+
 #### `mainloop`
+
+
 
 ### SDLCanvas and GLCanvas
 #### `triangle`

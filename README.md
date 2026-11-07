@@ -140,7 +140,23 @@ $app->button("left")
 Returns the state of the Left mouse button...true if pressed, false otherwise.
 
 #### `mainloop`
+This starts a loop, and takes a subroutine ref that is run every loop cycle.
+This subroutine might typically
+1) test an exit status and exit is this is met
+2) pass the input states (mouse position, button, time delta to the Game Object for processing
+3) updating the game state, generating the next frame for rendering
+```
+$gl->mainLoop(\&update);
 
+sub update{
+	my ($app)=@_;
+	if($app->key("esc") || $app->key("q")){
+		print("goodbye!\n");
+		exit(0);
+	}
+	$carrom->update($app->{dt},$app->mousePosition(),$app->button("left"));
+}
+```
 
 
 ### SDLCanvas and GLCanvas

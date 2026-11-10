@@ -160,7 +160,10 @@ sub update{
 
 
 ### SDLCanvas and GLCanvas
+The Canvas object is built with the GLAM object and really only uses a 1) triangle drawer and 2) colour changer
+from the backend and from these, derives everything else
 #### `triangle`
+
 #### `thickLine`
 #### `circle`
 
@@ -173,16 +176,30 @@ sub update{
 #### `length`
 #### `unitNormal`
 
-### Ball
+### Ball Helper
 
+
+### the Writer Helper
+
+
+### The UI Helper
+
+
+### The Logo Helper
 
 ## TO DO
 
-Text
-Line Drawings
+Text Stared   v0.05
+Line Drawings v0.05
 AOV
+3D objects
+Streamline background and foreground rendering
 
 ## CHANGES
+
+0.05
+* started making Logo, Text and Button Helpers
+* Polylines and composite shapes
 
 v0.04
 * added named colours

@@ -162,6 +162,7 @@ sub update{
 ### SDLCanvas and GLCanvas
 The Canvas object is built with the GLAM object and really only uses a 1) triangle drawer and 2) colour changer
 from the backend and from these, derives everything else
+
 #### `triangle`
 
 #### `thickLine`
@@ -200,6 +201,8 @@ Streamline background and foreground rendering
 0.05
 * started making Logo, Text and Button Helpers
 * Polylines and composite shapes
+
+<img width="386" height="336" alt="GLAM Text" src="https://github.com/user-attachments/assets/0b2320cb-936b-46af-9359-944e80e20ef9" />
 
 v0.04
 * added named colours

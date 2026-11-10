@@ -17,7 +17,7 @@ use warnings;
 use SDL3 qw[:all];
 
 
-our $VERSION='0.04';
+our $VERSION='0.05';
 
 
 sub new{
@@ -119,22 +119,8 @@ sub new{
 	return $self;
 }
 
-
-sub colour{
-	my ($self,$r,$g,$b,$a)=@_;
-  
-  if (ref $r eq "Array"){
-    $self->{currentColour}={ r => $r->[0], g => $r->[1], b => $r->[2]};
-  }
-  elsif(exists $self->{colour}->{$r}){
-    $self->colour(Misc::hex2fp($self->{colour}->{$r}));
-  }
-  else{
-    $self->{currentColour}={ r => $r, g => $g, b => $b};
-  }
-  
-  
-}
+# internal traingle maker that calls Graphics layer tp 
+# produce this primitive that permits all other shapes.
 
 sub winTriangle{
 	my ($self,$v2a,$v2b,$v2c)=@_;
@@ -162,13 +148,6 @@ sub triangle{
     }
 }
 
-sub quad{
-	my ($self,$p0,$p1,$p2,$p3)=@_;
-	$self->triangle($p0,$p1,$p2);
-	$self->triangle($p0,$p2,$p3);
-}
-
-
 sub thickLine{
 	my ($self,$p0,$p1,$t)=@_;
 
@@ -184,10 +163,30 @@ sub thickLine{
 	    );
 }
 
+sub polyline{
+	my ($self,$points,$t)=@_;
+  foreach (0..$#$points-1){
+    $self->thickLine($points->[$_],$points->[$_+1],$t)
+   };
+}  
+
+sub plines{
+	my ($self,$plines,$t)=@_;
+  foreach (@$plines){
+    $self->polyline($_,$t)
+  };
+}  
+
+sub quad{
+	my ($self,$p0,$p1,$p2,$p3)=@_;
+	$self->triangle($p0,$p1,$p2);
+	$self->triangle($p0,$p2,$p3);
+}
+
 sub circle{
 	my ($self,$center,$radius,$thickness,$triangles)=@_;
 	my $pi=3.14159;
-	$triangles//=10;
+	$triangles//=$self->{circleRes};;
 	my $STEP_ANGLE=(2*$pi)/($triangles);
 	for(0..$triangles-1){
 		my $p0=$center;
@@ -201,6 +200,41 @@ sub circle{
     }
 	}
 }
+
+
+sub composite{
+	my ($self,$parts)=@_;
+  foreach my $part (@$parts){
+    my ($command,@rest)=@$part;
+    if ($command eq "t"){
+      $self->triangle(@rest)
+    }
+    elsif($command eq "q"){ 
+      $self->quad(@rest);
+    }
+    elsif($command eq "p"){ 
+      $self->polyline(@rest);
+    }  
+    elsif($part->[0] eq "c"){ 
+      $self->colour(@rest);
+    }
+  }
+}
+
+sub colour{
+	my ($self,$r,$g,$b,$a)=@_;
+  
+  if (ref $r eq "Array"){
+    $self->{currentColour}={ r => $r->[0], g => $r->[1], b => $r->[2]};
+  }
+  elsif(exists $self->{colour}->{$r}){
+    $self->colour(Misc::hex2fp($self->{colour}->{$r}));
+  }
+  else{
+    $self->{currentColour}={ r => $r, g => $g, b => $b};
+  }
+}
+
 
 package Vector2;
 
@@ -298,11 +332,28 @@ sub toSimp{
 	    $window->{height}-$self->{y});
 }
 
+sub asString{
+   my ($self)=@_;
+   return "( $self->{x} , $self->{y} )";
+}
+
 sub asXY{
    my ($self)=@_;
    return ($self->{x},$self->{y});
 }
 
+sub inBox{
+  my ($self,$bl,$tr)=@_;
+  return 0  if ($self->{x}<$bl->{x}  || $self->{x}>$tr->{x} ||
+      $self->{y}<$bl->{y}  || $self->{y}>$tr->{y});
+      return 1;
+  
+}
+
+sub inCircle{
+  my ($self,$center,$radius)=@_;
+  return ($self->diff($center)->length()<$radius);
+}
 
 
 package Misc;

@@ -12,7 +12,7 @@ use OpenGL;
 use OpenGL::GLFW qw(:all);
 
 our $epsilon=0.00001;
-our $VERSION='0.04';
+our $VERSION='0.05';
 
 sub new{
 	my ($class,$params)=@_;
@@ -38,7 +38,6 @@ sub new{
 	return $self;
 	
 }
-
 
 sub mousePosition{
 	my $self=shift;
@@ -69,7 +68,6 @@ sub mainLoop{
 		glfwSwapBuffers($self->{window});
 		glfwPollEvents();
 	}
-	
 }
 
 package GLCanvas;
@@ -91,35 +89,8 @@ sub new{
 	return $self;
 }
 
-
-sub thickLine{
-	my ($self,$p0,$p1,$t)=@_;
-
-	my $v1=$p1->diff($p0);
-	my $v2=$v1->unitNormal()->mul($t/2);
-	return unless $v2->length()>0.0001;
-
-	$self->quad(
-	    $p0->add($v2),
-	    $p0->diff($v2),
-	    $p1->diff($v2),
-	    $p1->add($v2)
-	    );
-}
-
-sub colour{
-	my ($self,$r,$g,$b,$a)=@_;
-  if (ref $r eq "Array"){
-    glColor3f(@$r);
-  }
-  elsif(exists $self->{colour}->{$r}){
-    glColor3f(Misc::hex2fp($self->{colour}->{$r}));
-  }
-  else{
-    glColor3f($r,$g,$b);
-  }
-}
-
+# internal traingle maker that calls Graphics layer tp 
+# produce this primitive that permits all other shapes.
 sub winTriangle{
 	my ($self,$v2a,$v2b,$v2c)=@_;
 
@@ -142,6 +113,34 @@ sub triangle{
 	    );
 }
 
+sub thickLine{
+	my ($self,$p0,$p1,$t)=@_; 
+  
+	my $v1=$p1->diff($p0);
+	my $v2=$v1->unitNormal()->mul($t/2);
+	return unless $v2->length()>0.0001;
+
+	$self->quad(
+	    $p0->add($v2),
+	    $p0->diff($v2),
+	    $p1->diff($v2),
+	    $p1->add($v2)
+	    );
+}
+
+sub polyline{
+	my ($self,$points,$t)=@_;
+  foreach (0..$#$points-1){
+    $self->thickLine($points->[$_],$points->[$_+1],$t)
+   };
+}  
+
+sub plines{
+	my ($self,$plines,$t)=@_;
+  foreach (@$plines){
+    $self->polyline($_,$t)
+  };
+}  
 
 sub quad{
 	my ($self,$p0,$p1,$p2,$p3)=@_;
@@ -149,11 +148,10 @@ sub quad{
 	$self->triangle($p0,$p2,$p3);
 }
 
-
 sub circle{
 	my ($self,$center,$radius,$thickness,$triangles)=@_;
 	my $pi=3.14159;
-	$triangles//=10;
+	$triangles//=$self->{circleRes};
 	my $STEP_ANGLE=(2*$pi)/($triangles);
 	for(0..$triangles-1){
 		my $p0=$center;
@@ -168,7 +166,40 @@ sub circle{
 	}
 }
 
-  
+sub colour{
+	my ($self,$r,$g,$b,$a)=@_;
+  if (ref $r eq "Array"){
+    glColor3f(@$r);
+  }
+  elsif(exists $self->{colour}->{$r}){
+    glColor3f(Misc::hex2fp($self->{colour}->{$r}));
+  }
+  else{
+    glColor3f($r,$g,$b);
+  }
+}
+
+
+sub composite{
+	my ($self,$parts)=@_;
+  foreach my $part (@$parts){
+    my ($command,@rest)=@$part;
+    if ($command eq "t"){
+      $self->triangle(@rest)
+    }
+    elsif($command eq "q"){ 
+      $self->quad(@rest);
+    }
+    elsif($command eq "p"){ 
+      $self->polyline(@rest);
+    }  
+    elsif($part->[0] eq "c"){ 
+      $self->colour(@rest);
+    }
+  }
+}
+
+
   
 package Vector2;
 
@@ -276,6 +307,24 @@ sub asXY{
    return ($self->{x},$self->{y});
 }
 
+
+sub asString{
+   my ($self)=@_;
+   return "( $self->{x} , $self->{y} )";
+}
+
+sub inBox{
+  my ($self,$bl,$tr)=@_;
+  return 0  if ($self->{x}<$bl->{x}  || $self->{x}>$tr->{x} ||
+      $self->{y}<$bl->{y}  || $self->{y}>$tr->{y});
+      return 1;
+  
+}
+
+sub inCircle{
+  my ($self,$center,$radius)=@_;
+  return ($self->diff($center)->length()<$radius);
+}
 
 
 package Misc;
@@ -430,7 +479,6 @@ black           => "000000", # [0.0,0.0,0.0],
 
     };
 }
-
 
 sub hex2fp{
   my $hex=shift;
